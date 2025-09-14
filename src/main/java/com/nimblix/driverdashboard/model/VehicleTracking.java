@@ -1,0 +1,141 @@
+package com.nimblix.driverdashboard.model;
+
+import jakarta.persistence.*;
+import java.sql.Timestamp;
+import java.util.UUID;
+
+@Entity
+@Table(name = "vehicle_tracking")
+public class VehicleTracking {
+
+    @Id
+    @GeneratedValue
+    private UUID id;
+
+    @Column(name = "driver_id", nullable = false)
+    private String driverId;
+
+    @Column(name = "vehicle_number", nullable = false)
+    private String vehicleNumber;
+
+    @Column(name = "route_number")
+    private String routeNumber;
+
+    @Column(name = "current_km", nullable = false)
+    private Integer currentKm;
+
+    @Column(name = "fuel_level", nullable = false)
+    private Integer fuelLevel;
+
+    private String latitude;
+    private String longitude;
+    private String speed;
+
+    @Column(name = "engine_status", nullable = false)
+    private String engineStatus;
+
+    @Column(name = "is_moving")
+    private Boolean isMoving;
+
+    @Column(name = "last_maintenance_km")
+    private Integer lastMaintenanceKm;
+
+    @Column(name = "next_maintenance_due")
+    private Integer nextMaintenanceDue;
+
+    @Column(name = "emergency_alert")
+    private Boolean emergencyAlert;
+
+    private Timestamp timestamp;
+
+    public VehicleTracking() {}
+
+    public VehicleTracking(UUID id, String driverId, String vehicleNumber, String routeNumber,
+                           Integer currentKm, Integer fuelLevel, String latitude, String longitude,
+                           String speed, String engineStatus, Boolean isMoving,
+                           Integer lastMaintenanceKm, Integer nextMaintenanceDue,
+                           Boolean emergencyAlert, Timestamp timestamp) {
+        this.id = id;
+        this.driverId = driverId;
+        this.vehicleNumber = vehicleNumber;
+        this.routeNumber = routeNumber;
+        this.currentKm = currentKm;
+        this.fuelLevel = fuelLevel;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.speed = speed;
+        this.engineStatus = engineStatus;
+        this.isMoving = isMoving;
+        this.lastMaintenanceKm = lastMaintenanceKm;
+        this.nextMaintenanceDue = nextMaintenanceDue;
+        this.emergencyAlert = emergencyAlert;
+        this.timestamp = timestamp;
+    }
+
+    // Getters and Setters
+    public UUID getId() { return id; }
+    public void setId(UUID id) { this.id = id; }
+
+    public String getDriverId() { return driverId; }
+    public void setDriverId(String driverId) { this.driverId = driverId; }
+
+    public String getVehicleNumber() { return vehicleNumber; }
+    public void setVehicleNumber(String vehicleNumber) { this.vehicleNumber = vehicleNumber; }
+
+    public String getRouteNumber() { return routeNumber; }
+    public void setRouteNumber(String routeNumber) { this.routeNumber = routeNumber; }
+
+    public Integer getCurrentKm() { return currentKm; }
+    public void setCurrentKm(Integer currentKm) { this.currentKm = currentKm; }
+
+    public Integer getFuelLevel() { return fuelLevel; }
+    public void setFuelLevel(Integer fuelLevel) { this.fuelLevel = fuelLevel; }
+
+    public String getLatitude() { return latitude; }
+    public void setLatitude(String latitude) { this.latitude = latitude; }
+
+    public String getLongitude() { return longitude; }
+    public void setLongitude(String longitude) { this.longitude = longitude; }
+
+    public String getSpeed() { return speed; }
+    public void setSpeed(String speed) { this.speed = speed; }
+
+    public String getEngineStatus() { return engineStatus; }
+    public void setEngineStatus(String engineStatus) { this.engineStatus = engineStatus; }
+
+    public Boolean getIsMoving() { return isMoving; }
+    public void setIsMoving(Boolean isMoving) { this.isMoving = isMoving; }
+
+    public Integer getLastMaintenanceKm() { return lastMaintenanceKm; }
+    public void setLastMaintenanceKm(Integer lastMaintenanceKm) { this.lastMaintenanceKm = lastMaintenanceKm; }
+
+    public Integer getNextMaintenanceDue() { return nextMaintenanceDue; }
+    public void setNextMaintenanceDue(Integer nextMaintenanceDue) { this.nextMaintenanceDue = nextMaintenanceDue; }
+
+    public Boolean getEmergencyAlert() { return emergencyAlert; }
+    public void setEmergencyAlert(Boolean emergencyAlert) { this.emergencyAlert = emergencyAlert; }
+
+    public Timestamp getTimestamp() { return timestamp; }
+    public void setTimestamp(Timestamp timestamp) { this.timestamp = timestamp; }
+
+    @Override
+    public String toString() {
+        return "VehicleTracking{" +
+                "id=" + id +
+                ", driverId='" + driverId + '\'' +
+                ", vehicleNumber='" + vehicleNumber + '\'' +
+                ", routeNumber='" + routeNumber + '\'' +
+                ", currentKm=" + currentKm +
+                ", fuelLevel=" + fuelLevel +
+                ", latitude='" + latitude + '\'' +
+                ", longitude='" + longitude + '\'' +
+                ", speed='" + speed + '\'' +
+                ", engineStatus='" + engineStatus + '\'' +
+                ", isMoving=" + isMoving +
+                ", lastMaintenanceKm=" + lastMaintenanceKm +
+                ", nextMaintenanceDue=" + nextMaintenanceDue +
+                ", emergencyAlert=" + emergencyAlert +
+                ", timestamp=" + timestamp +
+                '}';
+    }
+}
