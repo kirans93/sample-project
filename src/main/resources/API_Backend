@@ -36,7 +36,7 @@ To Delete Maintenance Item:  http://localhost:8080/driver/maintenance/{id}      
 
 --------------------------------------------
 
-4. MODEL: BUS_ROUTE / VEHICLE_TRACKING / DRIVER
+4. MODEL: BUS_ROUTE / VEHICLE_TRACKING / DRIVER(NON_TEACHING_STAFF)
 --------------------------------------------
 
 # Overview APIs
