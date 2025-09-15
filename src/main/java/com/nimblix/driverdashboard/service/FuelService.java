@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service;
 import com.nimblix.driverdashboard.dto.FuelLogDto;
 import com.nimblix.driverdashboard.dto.FuelSummaryDto;
 import com.nimblix.driverdashboard.dto.FuelTrendDto;
+import com.nimblix.driverdashboard.exception.DeleteFailedException;
+import com.nimblix.driverdashboard.exception.ResourceNotFoundException;
+import com.nimblix.driverdashboard.exception.SaveFailedException;
+import com.nimblix.driverdashboard.exception.UpdateFailedException;
 import com.nimblix.driverdashboard.repository.FuelRepository;
 import com.nimblix.driverdashboard.repository.VehicleTrackingRepository;
 import com.nimblix.driverdashboard.model.FuelLog;
@@ -40,8 +44,8 @@ public class FuelService {
         if (vehicle != null) {
             status.setPercentage(vehicle.getFuelLevel());
             status.setOdometerKm(vehicle.getCurrentKm());
-            // simple range estimate: assume 12 km/l target mileage
-            status.setEstimatedRangeKm(vehicle.getFuelLevel() * 1.0 * 5);
+            // simple range estimate: assume 5km per % fuel
+            status.setEstimatedRangeKm(vehicle.getFuelLevel() * 5);
         }
         summary.setCurrentFuelStatus(status);
 
@@ -157,21 +161,9 @@ public class FuelService {
                 int distance = logs.get(logs.size() - 1).getOdometerKm() - logs.get(0).getOdometerKm();
                 double mileage = (liters > 0) ? (distance / liters) : 0.0;
 
-                trends.add(new FuelTrendDto(
-                        month.toString(),
-                        liters,
-                        cost,
-                        distance,
-                        mileage
-                ));
+                trends.add(new FuelTrendDto(month.toString(), liters, cost, distance, mileage));
             } else {
-                trends.add(new FuelTrendDto(
-                        month.toString(),
-                        0.0,
-                        0.0,
-                        0,
-                        0.0
-                ));
+                trends.add(new FuelTrendDto(month.toString(), 0.0, 0.0, 0, 0.0));
             }
         }
 
@@ -182,32 +174,38 @@ public class FuelService {
      * Add new fuel log
      */
     public FuelLogDto addFuelLog(FuelLogDto fuelLogDto) {
-        FuelLog log = new FuelLog();
-        log.setId(UUID.randomUUID().toString()); // ✅ manually generate UUID
+        try {
+            FuelLog log = new FuelLog();
+            log.setId(UUID.randomUUID().toString()); // ✅ generate UUID
 
-        // 🔹 Convert String → Timestamp safely
-        if (fuelLogDto.getDate() != null) {
-            log.setDate(Timestamp.valueOf(fuelLogDto.getDate())); 
-            // make sure dto.getDate() is in format: "yyyy-MM-dd HH:mm:ss"
+            // safe date parsing
+            if (fuelLogDto.getDate() != null) {
+                try {
+                    log.setDate(Timestamp.valueOf(fuelLogDto.getDate())); 
+                } catch (IllegalArgumentException e) {
+                    throw new SaveFailedException("Invalid date format. Use yyyy-MM-dd HH:mm:ss");
+                }
+            }
+
+            log.setStation(fuelLogDto.getStation());
+            log.setLiters(fuelLogDto.getLiters());
+            log.setCost(fuelLogDto.getCost());
+            log.setOdometerKm(fuelLogDto.getOdometerKm());
+            log.setDriverId(fuelLogDto.getDriverId());
+
+            FuelLog saved = fuelRepository.save(log);
+
+            return new FuelLogDto(
+                (saved.getDate() != null) ? saved.getDate().toString() : null,
+                saved.getStation(),
+                saved.getLiters(),
+                saved.getCost(),
+                saved.getOdometerKm(),
+                saved.getDriverId()
+            );
+        } catch (Exception e) {
+            throw new SaveFailedException("Failed to save fuel log: " + e.getMessage());
         }
-
-        log.setStation(fuelLogDto.getStation());
-        log.setLiters(fuelLogDto.getLiters());
-        log.setCost(fuelLogDto.getCost());
-        log.setOdometerKm(fuelLogDto.getOdometerKm());
-        log.setDriverId(fuelLogDto.getDriverId());
-
-        FuelLog saved = fuelRepository.save(log);
-
-        // 🔹 Convert Timestamp → String for DTO return
-        return new FuelLogDto(
-            (saved.getDate() != null) ? saved.getDate().toString() : null,
-            saved.getStation(),
-            saved.getLiters(),
-            saved.getCost(),
-            saved.getOdometerKm(),
-            saved.getDriverId()
-        );
     }
     
     /**
@@ -215,28 +213,35 @@ public class FuelService {
      */
     public FuelLogDto updateFuelLog(String id, FuelLogDto dto) {
         FuelLog existing = fuelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Fuel log not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Fuel log not found with id " + id));
 
-        // 🔹 Update fields if provided, else keep existing values
-        if (dto.getDate() != null) {
-            existing.setDate(Timestamp.valueOf(dto.getDate())); 
+        try {
+            if (dto.getDate() != null) {
+                try {
+                    existing.setDate(Timestamp.valueOf(dto.getDate())); 
+                } catch (IllegalArgumentException e) {
+                    throw new UpdateFailedException("Invalid date format. Use yyyy-MM-dd HH:mm:ss");
+                }
+            }
+            existing.setStation(dto.getStation() != null ? dto.getStation() : existing.getStation());
+            existing.setLiters(dto.getLiters() != 0 ? dto.getLiters() : existing.getLiters());
+            existing.setCost(dto.getCost() != 0 ? dto.getCost() : existing.getCost());
+            existing.setOdometerKm(dto.getOdometerKm() != 0 ? dto.getOdometerKm() : existing.getOdometerKm());
+            existing.setDriverId(dto.getDriverId() != null ? dto.getDriverId() : existing.getDriverId());
+
+            FuelLog updated = fuelRepository.save(existing);
+
+            return new FuelLogDto(
+                    (updated.getDate() != null) ? updated.getDate().toString() : null,
+                    updated.getStation(),
+                    updated.getLiters(),
+                    updated.getCost(),
+                    updated.getOdometerKm(),
+                    updated.getDriverId()
+            );
+        } catch (Exception e) {
+            throw new UpdateFailedException("Failed to update fuel log: " + e.getMessage());
         }
-        existing.setStation(dto.getStation() != null ? dto.getStation() : existing.getStation());
-        existing.setLiters(dto.getLiters() != 0 ? dto.getLiters() : existing.getLiters());
-        existing.setCost(dto.getCost() != 0 ? dto.getCost() : existing.getCost());
-        existing.setOdometerKm(dto.getOdometerKm() != 0 ? dto.getOdometerKm() : existing.getOdometerKm());
-        existing.setDriverId(dto.getDriverId() != null ? dto.getDriverId() : existing.getDriverId());
-
-        FuelLog updated = fuelRepository.save(existing);
-
-        return new FuelLogDto(
-                (updated.getDate() != null) ? updated.getDate().toString() : null,
-                updated.getStation(),
-                updated.getLiters(),
-                updated.getCost(),
-                updated.getOdometerKm(),
-                updated.getDriverId()
-        );
     }
 
     /**
@@ -244,8 +249,12 @@ public class FuelService {
      */
     public void deleteFuelLog(String id) {
         if (!fuelRepository.existsById(id)) {
-            throw new RuntimeException("Fuel log not found with id: " + id);
+            throw new ResourceNotFoundException("Fuel log not found with id: " + id);
         }
-        fuelRepository.deleteById(id);
+        try {
+            fuelRepository.deleteById(id);
+        } catch (Exception e) {
+            throw new DeleteFailedException("Failed to delete fuel log with id " + id);
+        }
     }
 }

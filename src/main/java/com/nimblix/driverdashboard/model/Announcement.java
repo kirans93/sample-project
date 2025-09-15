@@ -2,6 +2,8 @@ package com.nimblix.driverdashboard.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -11,29 +13,35 @@ import jakarta.persistence.Table;
 @Table(name = "announcements")
 public class Announcement {
 
-	@Id
-	@Column(name = "id", nullable = false, unique = true)
-	private String id;
+	    @Id
+	    @Column(name = "id", nullable = false, unique = true)
+	    @JsonProperty("id")
+	    private String id;
 
-	
-    @Column(name = "title", nullable = false)
-    private String title;
+	    @Column(name = "title", nullable = false)
+	    @JsonProperty("title")
+	    private String title;
 
-    @Column(name = "content", nullable = false)
-    private String content;
+	    @Column(name = "content", nullable = false)
+	    @JsonProperty("content")
+	    private String content;
 
-    @Column(name = "type", nullable = false)
-    private String type; // "Transport", "Academic", "General"
+	    @Column(name = "type", nullable = false)
+	    @JsonProperty("type")
+	    private String type;
 
-    @Column(name = "priority", nullable = false)
-    private String priority = "normal"; // default
+	    @Column(name = "priority", nullable = false)
+	    @JsonProperty("priority")
+	    private String priority = "normal";
 
-    @Column(name = "target_class")
-    private String targetClass;
+	    @Column(name = "target_class")
+	    @JsonProperty("target_class")
+	    private String targetClass;
 
-    @Column(name = "created_at", updatable = false, insertable = false)
-    private LocalDateTime createdAt; // auto-filled by DB (DEFAULT now())
-
+	    @Column(name = "created_at", updatable = false, insertable = false)
+	    @JsonProperty("created_at")
+	    private LocalDateTime createdAt;
+	    
     public Announcement() {}
 
     // Getters & Setters

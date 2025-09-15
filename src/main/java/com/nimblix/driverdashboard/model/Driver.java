@@ -3,39 +3,51 @@ package com.nimblix.driverdashboard.model;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "non_teaching_staff")
 public class Driver {
     
-    @Id
+	@Id
     @Column(name = "id")
-    private String id; // UUID from main system
+    @JsonProperty("id")
+    private String id;
 
     @Column(name = "user_id")
-    private String userId; // Links to users table
+    @JsonProperty("user_id")
+    private String userId;
 
     @Column(name = "name", nullable = false)
+    @JsonProperty("name")
     private String name;
 
     @Column(name = "employee_id", nullable = false)
+    @JsonProperty("employee_id")
     private String employeeId;
 
     @Column(name = "department", nullable = false)
-    private String department; // Should be "Transport"
+    @JsonProperty("department")
+    private String department;
 
     @Column(name = "designation", nullable = false)
-    private String designation; // Should be "Driver"
+    @JsonProperty("designation")
+    private String designation;
 
     @Column(name = "shift")
-    private String shift; // "Morning", "Evening", "Night"
+    @JsonProperty("shift")
+    private String shift;
 
     @Column(name = "phone")
+    @JsonProperty("phone")
     private String phone;
 
     @Column(name = "vehicle_assigned")
-    private String vehicleAssigned; // Bus number like "15A"
+    @JsonProperty("vehicle_assigned")
+    private String vehicleAssigned;
 
     @Column(name = "joining_date")
+    @JsonProperty("joining_date")
     private LocalDateTime joiningDate;
     
     public Driver() {}

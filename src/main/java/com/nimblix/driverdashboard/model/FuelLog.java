@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -15,28 +17,34 @@ import jakarta.persistence.Table;
 public class FuelLog {
 
 	@Id
-	@GeneratedValue(generator = "uuid")
-	@GenericGenerator(name = "uuid", strategy = "uuid2")
-	@Column(name = "id", columnDefinition = "CHAR(36)")
-	private String id;
-
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "id", columnDefinition = "CHAR(36)")
+    @JsonProperty("id")
+    private String id;
 
     @Column(name = "driver_id", nullable = false)
+    @JsonProperty("driver_id")
     private String driverId;
 
     @Column(nullable = false)
+    @JsonProperty("date")
     private Timestamp date;
 
     @Column(nullable = false)
+    @JsonProperty("station")
     private String station;
 
     @Column(nullable = false)
+    @JsonProperty("liters")
     private Double liters;
 
     @Column(nullable = false)
+    @JsonProperty("cost")
     private Double cost;
 
     @Column(name = "odometer_km", nullable = false)
+    @JsonProperty("odometer_km")
     private Integer odometerKm;
 
     public FuelLog() {}

@@ -2,39 +2,49 @@ package com.nimblix.driverdashboard.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "bus_routes")
 public class BusRoute {
     
-    @Id
+	@Id
     @Column(name = "id")
-    private String id; // UUID from main system
+    @JsonProperty("id")
+    private String id;
 
     @Column(name = "route_number", nullable = false)
+    @JsonProperty("route_number")
     private String routeNumber;
 
     @Column(name = "driver_name", nullable = false)
+    @JsonProperty("driver_name")
     private String driverName;
 
     @Column(name = "current_location")
+    @JsonProperty("current_location")
     private String currentLocation;
 
     @Column(name = "next_stop")
+    @JsonProperty("next_stop")
     private String nextStop;
 
     @Column(name = "eta")
-    private String eta; // Estimated Time of Arrival
+    @JsonProperty("eta")
+    private String eta;
 
     @Column(name = "status")
-    private String status; // "on_route", "maintenance", "available"
+    @JsonProperty("status")
+    private String status;
 
-    /** If you want to store JSON array as a String */
     @ElementCollection
     @CollectionTable(name = "bus_route_stops", joinColumns = @JoinColumn(name = "bus_route_id"))
     @Column(name = "stop")
+    @JsonProperty("stops")
     private List<String> stops;
+    
    public BusRoute() {}
    
     // Getters and Setters

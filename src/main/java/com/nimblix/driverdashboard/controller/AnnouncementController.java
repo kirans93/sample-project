@@ -87,4 +87,16 @@ public class AnnouncementController {
         announcementService.deleteAnnouncement(id);
         return ResponseEntity.ok("✅ Successfully deleted announcement with ID: " + id);
     }
+    
+ // ---------------- Exception Handling ----------------
+
+    /**
+     * API: Global Runtime Exception Handler
+     * METHOD: Auto triggered
+     * RESPONSE: Error message as String
+     */
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntime(RuntimeException ex) {
+        return ResponseEntity.badRequest().body("❌ Error: " + ex.getMessage());
+    }
 }

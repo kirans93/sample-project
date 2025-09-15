@@ -77,4 +77,17 @@ public class MaintenanceController {
         maintenanceService.deleteMaintenanceItem(id);
         return ResponseEntity.ok("✅ Successfully deleted maintenance item with ID: " + id);
     }
+    
+ // ---------------- Exception Handling ----------------
+
+    /**
+     * API: Global Runtime Exception Handler
+     * METHOD: Auto triggered
+     * RESPONSE: Error message as String
+     */
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntime(RuntimeException ex) {
+        return ResponseEntity.badRequest().body("❌ Error: " + ex.getMessage());
+    }
+
 }

@@ -1,5 +1,8 @@
 package com.nimblix.driverdashboard.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -8,14 +11,31 @@ import jakarta.persistence.Table;
 @Table(name = "maintenance_items")
 public class MaintenanceItemEntity {
     @Id
+    @JsonProperty("id")
     private String id;
+
+    @JsonProperty("title")
     private String title;
+
+    @JsonProperty("priority")
     private String priority;
+
+    @JsonProperty("category")
     private String category;
+
+    @Column(name = "service_type")
+    @JsonProperty("service_type")
     private String serviceType;
+
+    @JsonProperty("action")
     private String action;
-    private String status;       // ✅ Pending / Scheduled / Completed
-    private Double estimatedCost; // ✅ Estimated cost of service
+
+    @JsonProperty("status")
+    private String status;
+
+    @Column(name = "estimated_cost")
+    @JsonProperty("estimated_cost")
+    private Double estimatedCost;
 
     public MaintenanceItemEntity() {}
 

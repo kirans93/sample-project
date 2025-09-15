@@ -2,8 +2,12 @@ package com.nimblix.driverdashboard.service;
 
 import com.nimblix.driverdashboard.dto.MaintenanceItem;
 import com.nimblix.driverdashboard.dto.MaintenanceSummary;
-import com.nimblix.driverdashboard.repository.MaintenanceItemRepository;
+import com.nimblix.driverdashboard.exception.DeleteFailedException;
+import com.nimblix.driverdashboard.exception.ResourceNotFoundException;
+import com.nimblix.driverdashboard.exception.SaveFailedException;
+import com.nimblix.driverdashboard.exception.UpdateFailedException;
 import com.nimblix.driverdashboard.model.MaintenanceItemEntity;
+import com.nimblix.driverdashboard.repository.MaintenanceItemRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,34 +23,35 @@ public class MaintenanceService {
     private MaintenanceItemRepository repository;
 
     /**
-     * Add new maintenance item (from POST request)
+     * Add new maintenance item
      */
     public MaintenanceItem addMaintenanceItem(MaintenanceItem dto) {
-        // Convert DTO -> Entity
-        MaintenanceItemEntity entity = new MaintenanceItemEntity(
-                UUID.randomUUID().toString(),   // Generate unique ID
-                dto.getTitle(),
-                dto.getPriority(),
-                dto.getCategory(),
-                dto.getServiceType(),
-                dto.getAction(),
-                dto.getStatus(),
-                dto.getEstimatedCost()
-        );
+        try {
+            MaintenanceItemEntity entity = new MaintenanceItemEntity(
+                    UUID.randomUUID().toString(),   // Generate unique ID
+                    dto.getTitle(),
+                    dto.getPriority(),
+                    dto.getCategory(),
+                    dto.getServiceType(),
+                    dto.getAction(),
+                    dto.getStatus(),
+                    dto.getEstimatedCost()
+            );
 
-        // Save to DB
-        MaintenanceItemEntity saved = repository.save(entity);
+            MaintenanceItemEntity saved = repository.save(entity);
 
-        // Convert back to DTO
-        return new MaintenanceItem(
-                saved.getTitle(),
-                saved.getPriority(),
-                saved.getCategory(),
-                saved.getServiceType(),
-                saved.getAction(),
-                saved.getStatus(),
-                saved.getEstimatedCost()
-        );
+            return new MaintenanceItem(
+                    saved.getTitle(),
+                    saved.getPriority(),
+                    saved.getCategory(),
+                    saved.getServiceType(),
+                    saved.getAction(),
+                    saved.getStatus(),
+                    saved.getEstimatedCost()
+            );
+        } catch (Exception e) {
+            throw new SaveFailedException("Failed to save maintenance item: " + e.getMessage());
+        }
     }
 
     /**
@@ -87,34 +92,37 @@ public class MaintenanceService {
 
         return new MaintenanceSummary((int) urgent, (int) scheduled, (int) completed);
     }
-    
+
     /**
      * Update an existing maintenance item
      */
     public MaintenanceItem updateMaintenanceItem(String id, MaintenanceItem dto) {
         MaintenanceItemEntity existing = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Maintenance item not found with id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Maintenance item not found with id " + id));
 
-        // 🔹 Update fields (if provided, else keep existing values)
-        existing.setTitle(dto.getTitle() != null ? dto.getTitle() : existing.getTitle());
-        existing.setPriority(dto.getPriority() != null ? dto.getPriority() : existing.getPriority());
-        existing.setCategory(dto.getCategory() != null ? dto.getCategory() : existing.getCategory());
-        existing.setServiceType(dto.getServiceType() != null ? dto.getServiceType() : existing.getServiceType());
-        existing.setAction(dto.getAction() != null ? dto.getAction() : existing.getAction());
-        existing.setStatus(dto.getStatus() != null ? dto.getStatus() : existing.getStatus());
-        existing.setEstimatedCost(dto.getEstimatedCost() != 0 ? dto.getEstimatedCost() : existing.getEstimatedCost());
+        try {
+            existing.setTitle(dto.getTitle() != null ? dto.getTitle() : existing.getTitle());
+            existing.setPriority(dto.getPriority() != null ? dto.getPriority() : existing.getPriority());
+            existing.setCategory(dto.getCategory() != null ? dto.getCategory() : existing.getCategory());
+            existing.setServiceType(dto.getServiceType() != null ? dto.getServiceType() : existing.getServiceType());
+            existing.setAction(dto.getAction() != null ? dto.getAction() : existing.getAction());
+            existing.setStatus(dto.getStatus() != null ? dto.getStatus() : existing.getStatus());
+            existing.setEstimatedCost(dto.getEstimatedCost() != 0 ? dto.getEstimatedCost() : existing.getEstimatedCost());
 
-        MaintenanceItemEntity updated = repository.save(existing);
+            MaintenanceItemEntity updated = repository.save(existing);
 
-        return new MaintenanceItem(
-                updated.getTitle(),
-                updated.getPriority(),
-                updated.getCategory(),
-                updated.getServiceType(),
-                updated.getAction(),
-                updated.getStatus(),
-                updated.getEstimatedCost()
-        );
+            return new MaintenanceItem(
+                    updated.getTitle(),
+                    updated.getPriority(),
+                    updated.getCategory(),
+                    updated.getServiceType(),
+                    updated.getAction(),
+                    updated.getStatus(),
+                    updated.getEstimatedCost()
+            );
+        } catch (Exception e) {
+            throw new UpdateFailedException("Failed to update maintenance item: " + e.getMessage());
+        }
     }
 
     /**
@@ -122,9 +130,12 @@ public class MaintenanceService {
      */
     public void deleteMaintenanceItem(String id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Maintenance item not found with id " + id);
+            throw new ResourceNotFoundException("Maintenance item not found with id " + id);
         }
-        repository.deleteById(id);
+        try {
+            repository.deleteById(id);
+        } catch (Exception e) {
+            throw new DeleteFailedException("Failed to delete maintenance item with id " + id);
+        }
     }
-
 }

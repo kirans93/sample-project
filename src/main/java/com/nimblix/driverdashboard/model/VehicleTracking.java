@@ -4,55 +4,69 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity
 @Table(name = "vehicle_tracking")
 public class VehicleTracking {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(columnDefinition = "BINARY(16)")
-	private UUID id;
-	
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "BINARY(16)")
+    @JsonProperty("id")
+    private UUID id;
+
     @Column(name = "driver_id", nullable = false)
+    @JsonProperty("driver_id")
     private String driverId;
 
     @Column(name = "vehicle_number", nullable = false)
+    @JsonProperty("vehicle_number")
     private String vehicleNumber;
 
     @Column(name = "route_number", nullable = false)
+    @JsonProperty("route_number")
     private String routeNumber;
 
     @Column(name = "current_km", nullable = false)
+    @JsonProperty("current_km")
     private Integer currentKm;
 
     @Column(name = "fuel_level", nullable = false)
+    @JsonProperty("fuel_level")
     private Integer fuelLevel;
 
-    @Column(name = "latitude")
+    @JsonProperty("latitude")
     private String latitude;
 
-    @Column(name = "longitude")
+    @JsonProperty("longitude")
     private String longitude;
 
-    @Column(name = "speed")
+    @JsonProperty("speed")
     private String speed;
 
     @Column(name = "engine_status", nullable = false)
+    @JsonProperty("engine_status")
     private String engineStatus;
 
     @Column(name = "is_moving")
+    @JsonProperty("is_moving")
     private Boolean isMoving;
 
     @Column(name = "last_maintenance_km")
+    @JsonProperty("last_maintenance_km")
     private Integer lastMaintenanceKm;
 
     @Column(name = "next_maintenance_due")
+    @JsonProperty("next_maintenance_due")
     private Integer nextMaintenanceDue;
 
     @Column(name = "emergency_alert")
+    @JsonProperty("emergency_alert")
     private Boolean emergencyAlert;
 
     @Column(name = "timestamp", columnDefinition = "TIMESTAMP DEFAULT now()")
+    @JsonProperty("timestamp")
     private LocalDateTime timestamp;
 
     public VehicleTracking() {}

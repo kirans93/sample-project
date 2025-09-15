@@ -106,4 +106,19 @@ public class FuelController {
         fuelService.deleteFuelLog(id);
         return buildResponse("🗑️ Successfully deleted fuel log", "http://localhost:8080/driver/fuel/logs/" + id);
     }
+    
+ // ---------------- Exception Handling ----------------
+
+    /**
+     * API: Global Runtime Exception Handler
+     * METHOD: Auto triggered
+     * RESPONSE: Error message as String
+     */
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, String>> handleRuntime(RuntimeException ex) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", ex.getMessage());
+        return ResponseEntity.badRequest().body(errorResponse);
+    }
+
 }
