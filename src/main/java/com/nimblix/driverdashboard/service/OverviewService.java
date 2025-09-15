@@ -7,28 +7,28 @@ import org.springframework.stereotype.Service;
 
 import com.nimblix.driverdashboard.model.BusRoute;
 import com.nimblix.driverdashboard.model.Driver;
-import com.nimblix.driverdashboard.model.VehicleStatus;
+import com.nimblix.driverdashboard.model.VehicleTracking;
 import com.nimblix.driverdashboard.dto.DriverInfoDto;
 import com.nimblix.driverdashboard.dto.OverviewResponse;
 import com.nimblix.driverdashboard.dto.PerformanceInfoDto;
 import com.nimblix.driverdashboard.dto.VehicleInfoDto;
 import com.nimblix.driverdashboard.repository.BusRouteRepository;
 import com.nimblix.driverdashboard.repository.DriverRepository;
-import com.nimblix.driverdashboard.repository.VehicleStatusRepository;
+import com.nimblix.driverdashboard.repository.VehicleTrackingRepository;
 
 @Service
 public class OverviewService {
 
     private final DriverRepository driverRepository;
-    private final VehicleStatusRepository vehicleStatusRepository;
+    private final VehicleTrackingRepository vehicleTrackingRepository;
     private final BusRouteRepository busRouteRepository;
 
     public OverviewService(
             DriverRepository driverRepository,
-            VehicleStatusRepository vehicleStatusRepository,
+            VehicleTrackingRepository vehicleTrackingRepository,
             BusRouteRepository busRouteRepository) {
         this.driverRepository = driverRepository;
-        this.vehicleStatusRepository = vehicleStatusRepository;
+        this.vehicleTrackingRepository = vehicleTrackingRepository;
         this.busRouteRepository = busRouteRepository;
     }
 
@@ -55,13 +55,13 @@ public class OverviewService {
         return buildOverviewResponse(driver);
     }
     
- // ---------------- GET ----------------
-
+    /** Get BusRoute by Id */
     public BusRoute getBusRouteById(String id) {
         return busRouteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("BusRoute not found with id: " + id));
     }
 
+    /** Get all BusRoutes */
     public List<BusRoute> getAllBusRoutes() {
         return busRouteRepository.findAll();
     }
@@ -69,15 +69,21 @@ public class OverviewService {
 
     // ---------------- POST ----------------
 
-    public VehicleStatus saveVehicleStatus(VehicleStatus vehicleStatus) {
-        vehicleStatus.setId(UUID.randomUUID().toString());
-        return vehicleStatusRepository.save(vehicleStatus);
+    public VehicleTracking saveVehicleTracking(VehicleTracking vehicleTracking) {
+        vehicleTracking.setId(UUID.randomUUID()); // UUID, not String anymore
+        return vehicleTrackingRepository.save(vehicleTracking);
     }
 
     public BusRoute saveBusRoute(BusRoute busRoute) {
         busRoute.setId(UUID.randomUUID().toString());
         return busRouteRepository.save(busRoute);
     }
+    
+    public Driver saveDriver(Driver driver) {
+        driver.setId(UUID.randomUUID().toString());
+        return driverRepository.save(driver);
+    }
+
 
     // ---------------- PRIVATE HELPERS ----------------
     private OverviewResponse buildOverviewResponse(Driver driver) {
@@ -93,20 +99,20 @@ public class OverviewService {
         response.setDriverInfo(driverInfo);
 
         // Vehicle Info
-        VehicleStatus vehicleStatus = vehicleStatusRepository
+        VehicleTracking vehicleTracking = vehicleTrackingRepository
                 .findTopByDriverIdOrderByTimestampDesc(driver.getId())
                 .orElse(null);
 
-        if (vehicleStatus != null) {
+        if (vehicleTracking != null) {
             VehicleInfoDto vehicleInfo = new VehicleInfoDto();
-            vehicleInfo.setEngineHealth(vehicleStatus.getEngineStatus());
-            vehicleInfo.setFuelLevel(vehicleStatus.getFuelLevel() + "%");
-            vehicleInfo.setNextService("Due at " + vehicleStatus.getNextMaintenanceDue() + " km");
-            vehicleInfo.setMileageToday(vehicleStatus.getCurrentKm() + " km");
+            vehicleInfo.setEngineHealth(vehicleTracking.getEngineStatus());
+            vehicleInfo.setFuelLevel(vehicleTracking.getFuelLevel() + "%");
+            vehicleInfo.setNextService("Due at " + vehicleTracking.getNextMaintenanceDue() + " km");
+            vehicleInfo.setMileageToday(vehicleTracking.getCurrentKm() + " km");
             response.setVehicleInfo(vehicleInfo);
         }
 
-        // Performance Info (dummy for now)
+        // Performance Info (dummy / hardcoded)
         PerformanceInfoDto performance = new PerformanceInfoDto();
         performance.setAttendance("Present");
         performance.setTripsCompleted("8/8");
@@ -116,18 +122,18 @@ public class OverviewService {
         return response;
     }
     
- // ---------------- PUT ----------------
+    // ---------------- PUT ----------------
 
-    public VehicleStatus updateVehicleStatus(String id, VehicleStatus updatedStatus) {
-        VehicleStatus existing = vehicleStatusRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("VehicleStatus not found with id: " + id));
+    public VehicleTracking updateVehicleTracking(UUID id, VehicleTracking updatedTracking) {
+        VehicleTracking existing = vehicleTrackingRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("VehicleTracking not found with id: " + id));
 
-        existing.setFuelLevel(updatedStatus.getFuelLevel());
-        existing.setEngineStatus(updatedStatus.getEngineStatus());
-        existing.setCurrentKm(updatedStatus.getCurrentKm());
-        existing.setNextMaintenanceDue(updatedStatus.getNextMaintenanceDue());
+        existing.setFuelLevel(updatedTracking.getFuelLevel());
+        existing.setEngineStatus(updatedTracking.getEngineStatus());
+        existing.setCurrentKm(updatedTracking.getCurrentKm());
+        existing.setNextMaintenanceDue(updatedTracking.getNextMaintenanceDue());
 
-        return vehicleStatusRepository.save(existing);
+        return vehicleTrackingRepository.save(existing);
     }
 
     public BusRoute updateBusRoute(String id, BusRoute updatedRoute) {
@@ -140,18 +146,32 @@ public class OverviewService {
         existing.setNextStop(updatedRoute.getNextStop());
         existing.setEta(updatedRoute.getEta());
         existing.setStatus(updatedRoute.getStatus());
-        existing.setStops(updatedRoute.getStops()); // ✅ if stops is a JSON/array field
+        existing.setStops(updatedRoute.getStops());
 
         return busRouteRepository.save(existing);
     }
+    
+    public Driver updateDriver(String id, Driver updatedDriver) {
+        Driver existing = driverRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Driver not found with id: " + id));
+
+        existing.setEmployeeId(updatedDriver.getEmployeeId());
+        existing.setDepartment(updatedDriver.getDepartment());
+        existing.setShift(updatedDriver.getShift());
+        existing.setVehicleAssigned(updatedDriver.getVehicleAssigned());
+        existing.setPhone(updatedDriver.getPhone());
+
+        return driverRepository.save(existing);
+    }
+
 
     // ---------------- DELETE ----------------
 
-    public void deleteVehicleStatus(String id) {
-        if (!vehicleStatusRepository.existsById(id)) {
-            throw new RuntimeException("VehicleStatus not found with id: " + id);
+    public void deleteVehicleTracking(UUID id) {
+        if (!vehicleTrackingRepository.existsById(id)) {
+            throw new RuntimeException("VehicleTracking not found with id: " + id);
         }
-        vehicleStatusRepository.deleteById(id);
+        vehicleTrackingRepository.deleteById(id);
     }
 
     public void deleteBusRoute(String id) {
@@ -161,5 +181,11 @@ public class OverviewService {
         busRouteRepository.deleteById(id);
     }
 
+    public void deleteDriver(String id) {
+        if (!driverRepository.existsById(id)) {
+            throw new RuntimeException("Driver not found with id: " + id);
+        }
+        driverRepository.deleteById(id);
+    }
 
 }

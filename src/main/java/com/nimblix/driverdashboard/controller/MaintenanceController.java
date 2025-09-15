@@ -4,6 +4,7 @@ import com.nimblix.driverdashboard.dto.MaintenanceItem;
 import com.nimblix.driverdashboard.dto.MaintenanceSummary;
 import com.nimblix.driverdashboard.service.MaintenanceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,47 +17,64 @@ public class MaintenanceController {
     private MaintenanceService maintenanceService;
 
     /**
-     * ✅ Add new maintenance item
+     * API: Add new maintenance item
+     * METHOD: POST
+     * URL: http://localhost:8080/driver/maintenance/add
+     * BODY: MaintenanceItem JSON
+     * RESPONSE: Success message
      */
     @PostMapping("/add")
-    public MaintenanceItem addItem(@RequestBody MaintenanceItem item) {
-        return maintenanceService.addMaintenanceItem(item);
+    public ResponseEntity<String> addItem(@RequestBody MaintenanceItem item) {
+        maintenanceService.addMaintenanceItem(item);
+        return ResponseEntity.ok("✅ Successfully added maintenance item");
     }
 
     /**
-     * ✅ Fetch all maintenance items
+     * API: Fetch all maintenance items
+     * METHOD: GET
+     * URL: http://localhost:8080/driver/maintenance/all
+     * RESPONSE: List of MaintenanceItem
      */
-    //http://localhost:8080/driver/maintenance/all
     @GetMapping("/all")
-    public List<MaintenanceItem> getAllItems() {
-        return maintenanceService.getAllMaintenanceItems();
+    public ResponseEntity<List<MaintenanceItem>> getAllItems() {
+        return ResponseEntity.ok(maintenanceService.getAllMaintenanceItems());
     }
-    
- // ✅ GET -> Summary (Urgent / Scheduled / Completed)
-    
-    //http://localhost:8080/driver/maintenance/summary
-    @GetMapping("/summary")
-    public MaintenanceSummary getSummary() {
-        return maintenanceService.getSummary();
-    }
-    
-    
+
     /**
-     * ✅ Update a maintenance item by ID
+     * API: Fetch maintenance summary (Urgent / Scheduled / Completed)
+     * METHOD: GET
+     * URL: http://localhost:8080/driver/maintenance/summary
+     * RESPONSE: MaintenanceSummary
+     */
+    @GetMapping("/summary")
+    public ResponseEntity<MaintenanceSummary> getSummary() {
+        return ResponseEntity.ok(maintenanceService.getSummary());
+    }
+
+    /**
+     * API: Update a maintenance item by ID
+     * METHOD: PUT
+     * URL: http://localhost:8080/driver/maintenance/{id}
+     * BODY: MaintenanceItem JSON
+     * RESPONSE: Success message
      */
     @PutMapping("/{id}")
-    public MaintenanceItem updateItem(
+    public ResponseEntity<String> updateItem(
             @PathVariable String id,
             @RequestBody MaintenanceItem item) {
-        return maintenanceService.updateMaintenanceItem(id, item);
+        maintenanceService.updateMaintenanceItem(id, item);
+        return ResponseEntity.ok("✅ Successfully updated maintenance item with ID: " + id);
     }
 
     /**
-     * ✅ Delete a maintenance item by ID
+     * API: Delete a maintenance item by ID
+     * METHOD: DELETE
+     * URL: http://localhost:8080/driver/maintenance/{id}
+     * RESPONSE: Success message
      */
     @DeleteMapping("/{id}")
-    public void deleteItem(@PathVariable String id) {
+    public ResponseEntity<String> deleteItem(@PathVariable String id) {
         maintenanceService.deleteMaintenanceItem(id);
+        return ResponseEntity.ok("✅ Successfully deleted maintenance item with ID: " + id);
     }
-
 }

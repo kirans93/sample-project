@@ -30,6 +30,8 @@ public class MaintenanceItemEntity {
         this.status = status;
         this.estimatedCost = estimatedCost;
     }
+    
+ // Getters & Setters
 
 	public String getId() {
 		return id;
@@ -95,7 +97,7 @@ public class MaintenanceItemEntity {
 		this.estimatedCost = estimatedCost;
 	}
 
-    // Getters & Setters
+    
     // ...
     
     

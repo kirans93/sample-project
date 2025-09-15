@@ -15,7 +15,7 @@ import com.nimblix.driverdashboard.dto.FuelLogDto;
 import com.nimblix.driverdashboard.dto.FuelSummaryDto;
 import com.nimblix.driverdashboard.dto.FuelTrendDto;
 import com.nimblix.driverdashboard.repository.FuelRepository;
-import com.nimblix.driverdashboard.repository.VehicleRepository;
+import com.nimblix.driverdashboard.repository.VehicleTrackingRepository;
 import com.nimblix.driverdashboard.model.FuelLog;
 import com.nimblix.driverdashboard.model.VehicleTracking;
 
@@ -26,7 +26,7 @@ public class FuelService {
     private FuelRepository fuelRepository;
 
     @Autowired
-    private VehicleRepository vehicleRepository;
+    private VehicleTrackingRepository vehicleTrackingRepository;
 
     /**
      * Dashboard summary for a driver
@@ -35,7 +35,7 @@ public class FuelService {
         FuelSummaryDto summary = new FuelSummaryDto();
 
         // 🔹 1. Current Fuel Status
-        VehicleTracking vehicle = vehicleRepository.findFirstByDriverIdOrderByTimestampDesc(driverId);
+        VehicleTracking vehicle = vehicleTrackingRepository.findFirstByDriverIdOrderByTimestampDesc(driverId);
         FuelSummaryDto.CurrentFuelStatus status = new FuelSummaryDto.CurrentFuelStatus();
         if (vehicle != null) {
             status.setPercentage(vehicle.getFuelLevel());
@@ -181,8 +181,6 @@ public class FuelService {
     /**
      * Add new fuel log
      */
-  
-
     public FuelLogDto addFuelLog(FuelLogDto fuelLogDto) {
         FuelLog log = new FuelLog();
         log.setId(UUID.randomUUID().toString()); // ✅ manually generate UUID
@@ -246,11 +244,8 @@ public class FuelService {
      */
     public void deleteFuelLog(String id) {
         if (!fuelRepository.existsById(id)) {
-            throw new RuntimeException("Fuel log not found with id " + id);
+            throw new RuntimeException("Fuel log not found with id: " + id);
         }
         fuelRepository.deleteById(id);
     }
-
-
-
 }

@@ -1,0 +1,69 @@
+********************************************
+!! DRIVER DASHBOARD !!
+********************************************
+
+1. MODEL: ANNOUNCEMENT
+--------------------------------------------
+
+To List all Announcements:   http://localhost:8080/api/announcements                  (Method: GET)
+To Get Recent Announcements: http://localhost:8080/api/announcements/recent          (Method: GET)
+To Create Announcement:      http://localhost:8080/api/announcements                 (Method: POST, RequestBody)
+To Update Announcement:      http://localhost:8080/api/announcements/{id}            (Method: PUT, RequestBody)
+To Delete Announcement:      http://localhost:8080/api/announcements/{id}            (Method: DELETE)
+
+--------------------------------------------
+
+2. MODEL: FUEL_LOGS
+--------------------------------------------
+
+To Add Fuel Log:             http://localhost:8080/driver/fuel/logs                  (Method: POST, RequestBody)
+To Get Fuel Summary:         http://localhost:8080/driver/fuel/summary?driverId={}   (Method: GET)
+To Get Recent Fuel Logs:     http://localhost:8080/driver/fuel/logs?driverId={}      (Method: GET)
+To Get Fuel Trends:          http://localhost:8080/driver/fuel/trends?driverId={}    (Method: GET)
+To Update Fuel Log:          http://localhost:8080/driver/fuel/logs/{id}             (Method: PUT, RequestBody)
+To Delete Fuel Log:          http://localhost:8080/driver/fuel/logs/{id}             (Method: DELETE)
+
+--------------------------------------------
+
+3. MODEL: MAINTENANCE_ITEMS
+--------------------------------------------
+
+To Add Maintenance Item:     http://localhost:8080/driver/maintenance/add            (Method: POST, RequestBody)
+To Get All Items:            http://localhost:8080/driver/maintenance/all            (Method: GET)
+To Get Maintenance Summary:  http://localhost:8080/driver/maintenance/summary        (Method: GET)
+To Update Maintenance Item:  http://localhost:8080/driver/maintenance/{id}           (Method: PUT, RequestBody)
+To Delete Maintenance Item:  http://localhost:8080/driver/maintenance/{id}           (Method: DELETE)
+
+--------------------------------------------
+
+4. MODEL: BUS_ROUTE / VEHICLE_TRACKING / DRIVER
+--------------------------------------------
+
+# Overview APIs
+To Get Driver Overview by Driver ID:      http://localhost:8080/api/non-teaching-staff/drivers/{driverId}/overview               (Method: GET)
+To Get Driver Overview by Employee ID:    http://localhost:8080/api/non-teaching-staff/drivers/employee/{employeeId}/overview    (Method: GET)
+To Get Driver Overview by Vehicle Number: http://localhost:8080/api/non-teaching-staff/drivers/vehicle/{vehicleNumber}/overview  (Method: GET)
+
+# Bus Routes
+To Get All Bus Routes:       http://localhost:8080/api/non-teaching-staff/drivers/bus-routes                                    (Method: GET)
+To Get Bus Route by ID:      http://localhost:8080/api/non-teaching-staff/drivers/bus-routes/{id}                               (Method: GET)
+
+# Health Check
+To Health Check:             http://localhost:8080/api/non-teaching-staff/drivers/health                                       (Method: GET)
+
+# Create
+To Create Vehicle Tracking:  http://localhost:8080/api/non-teaching-staff/drivers/add-vehicle-tracking                         (Method: POST, RequestBody)
+To Create Bus Route:         http://localhost:8080/api/non-teaching-staff/drivers/add-bus-routes                               (Method: POST, RequestBody)
+To Create Driver:            http://localhost:8080/api/non-teaching-staff/drivers/add-driver                                   (Method: POST, RequestBody)
+
+# Update
+To Update Vehicle Tracking:  http://localhost:8080/api/non-teaching-staff/drivers/vehicle-tracking/{id}                        (Method: PUT, RequestBody)
+To Update Bus Route:         http://localhost:8080/api/non-teaching-staff/drivers/bus-routes/{id}                              (Method: PUT, RequestBody)
+To Update Driver:            http://localhost:8080/api/non-teaching-staff/drivers/drivers/{id}                                 (Method: PUT, RequestBody)
+
+# Delete Model
+To Delete Vehicle Tracking:  http://localhost:8080/api/non-teaching-staff/drivers/vehicle-tracking/{id}                        (Method: DELETE)
+To Delete Bus Route:         http://localhost:8080/api/non-teaching-staff/drivers/bus-routes/{id}                              (Method: DELETE)
+To Delete Driver:            http://localhost:8080/api/non-teaching-staff/drivers/drivers/{id}                                 (Method: DELETE)
+
+--------------------------------------------
